@@ -1,0 +1,3 @@
+.list-block ul:before, .list-block ul:after {
+	display: none;
+}

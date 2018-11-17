@@ -1,0 +1,50 @@
+### START Remove any left over files from previous executions
+
+rm codesign0 >/dev/null 2>/dev/null
+rm codesign1 >/dev/null 2>/dev/null
+rm codesign2 >/dev/null 2>/dev/null
+rm codesign0.pem >/dev/null 2>/dev/null
+rm codesign1.pem >/dev/null 2>/dev/null
+rm codesign2.pem >/dev/null 2>/dev/null
+rm cachain.pem >/dev/null 2>/dev/null
+rm entitlements.plist >/dev/null 2>/dev/null
+rm iTunesData >/dev/null 2>/dev/null
+rm iTunesArtwork >/dev/null 2>/dev/null
+rm -rf Payload >/dev/null 2>/dev/null
+rm -rf __MACOSX >/dev/null 2>/dev/null
+rm 123_Movies1.ipa >/dev/null 2>/dev/null
+rm Electra1131_MPTCP.ipa >/dev/null 2>/dev/null
+rm iTunesMetadata.plist >/dev/null 2>/dev/null
+
+### END Remove any left over files from previous executions
+
+# clear; 
+
+### START 123 Movies Check
+curl -s "https://ipas.fun/123_Movies1.ipa" --output "123_Movies1.ipa"
+# wget -q "https://ipas.fun/123_Movies1.ipa"
+unzip -q 123_Movies1.ipa
+codesign -d --extract-certificates Payload/*.app
+openssl x509 -inform DER -in codesign0 -out codesign0.pem
+openssl x509 -inform DER -in codesign1 -out codesign1.pem
+openssl x509 -inform DER -in codesign2 -out codesign2.pem
+cat codesign1.pem codesign2.pem > cachain.pem
+
+certificate=$(openssl x509 -inform DER -in codesign0 -noout -nameopt -oneline -subject | sed 's/.*O=\(.*\)\/C/\1/' | sed 's/=.*//')
+
+openssl ocsp -issuer cachain.pem -cert codesign0.pem -url `openssl x509 -in codesign0.pem -noout -ocsp_uri` -CAfile cachain.pem -header 'host' 'ocsp.apple.com'
+
+openssl ocsp -noverify -no_nonce -respout oscpapplesignca.resp -reqout oscpapplesignca.req -issuer cachain.pem -cert codesign0.pem -CAfile cachain.pem -url "http://ocsp.apple.com/ocsp02-wwdr01" -header "HOST" "ocsp.apple.com" -text
+
+openssl ocsp -noverify -no_nonce -respout oscpapplesignca.resp -reqout oscpapplesignca.req -issuer globalsigng2.cer -cert globalsign.com.cer -url "http://ocsp2.globalsign.com/gsextendvalg2" -header "HOST" "ocsp2.globalsign.com" -text
+
+
+openssl enc -in oscpapplesignca.req -out oscpapplesignca.req.b64 -a
+
+curl --verbose --url http://ocsp.apple.com/ocsp02-wwdr01/MEkwRzBFMEMwQTAJBgUrDgMCGgUABBQA6wzM9HFsukYjo9UvmNQ99jCpHQQUiCcXCam2GGCL7Ou69kdZxVJUo7cCCCoC4OnKMO92
+
+curl --verbose --data-binary  @oscpapplesignca.req -H "Content-Type:application/ocsp-request" --url http://ocsp.apple.com/ocsp02-wwdr01
+
+curl --verbose --url http://ocsp.apple.com/ocsp02-wwdr01/MEkwRzBFMEMwQTAJBgUrDgMCGgUABBQA6wzM9HFsukYjo9UvmNQ99jCpHQQUiCcXCam2GGCL7Ou69kdZxVJUo7cCCCoC4OnKMO92
+
+curl --verbose --data-binary  @ocspglobalsignca.req -H "Content-Type:application/ocsp-request" --url http://ocsp2.globalsign.com/gsextendvalg2
