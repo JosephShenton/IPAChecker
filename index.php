@@ -122,7 +122,7 @@
         </div>
         <!-- Bottom Toolbar-->
         <div class="toolbar" style="background: #FFF; -webkit-box-shadow: 0px 0px 22px -4px rgba(0, 0, 0, 0.16); -moz-box-shadow: 0px 0px 22px -4px rgba(0, 0, 0, 0.16); box-shadow: 0px 0px 22px -4px rgba(0, 0, 0, 0.16);">
-          <div class="toolbar-inner"><a href="#" class="link">Twitter</a><a href="#" class="link">GitHub</a></div>
+          <div class="toolbar-inner"><a href="https://twitter.com/notjosephs" class="link external">Twitter</a><a href="https://github.com/JosephShenton/IPAChecker" class="link external">GitHub</a></div>
         </div>
       </div>
     </div>
