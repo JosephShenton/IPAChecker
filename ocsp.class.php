@@ -194,6 +194,12 @@
 				return "AppValley";
 			} elseif (self::str_contains("enjoy.ipacdn", $url)) {
 				return "TweakBox";
+			} elseif (self::str_contains("downapp.", $url)) {
+				return "Tutu Helper";
+			}  elseif (self::str_contains("qd.leaderhero.com", $url)) {
+				return "Panda Helper";
+			}   elseif (self::str_contains("185.246.209.74", $url)) {
+				return "Top Store";
 			} else {
 				return "Unknown";
 			}
@@ -217,7 +223,7 @@
 				"rm *.ipa >/dev/null 2>/dev/null",
 				"rm iTunesMetadata.plist >/dev/null 2>/dev/null",
 				"clear",
-				"curl -s '$url' --output '$ipaName'",
+				"curl -s '$url' -L --output '$ipaName'",
 				"unzip -q $ipaName",
 				"codesign -d --extract-certificates Payload/*.app",
 				"openssl x509 -inform DER -in codesign0 -out codesign0.pem",
